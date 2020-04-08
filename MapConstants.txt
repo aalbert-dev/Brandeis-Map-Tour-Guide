@@ -1,0 +1,50 @@
+CONSTANTS TO BE USED FOR MAP CODE.
+(These constants are being presented here using C syntax,
+but can easily be adapted to other languages.)
+
+/***************************************************************************************/
+/*Limits.                                                                              */
+/***************************************************************************************/
+#define MaxString 100      /*Maximum length of any input string.*/
+#define MaxLabel 5         /*Maximum length of a location label (includes ending \0).*/
+#define MaxVertex 175      /*Maximum number of vertices.*/
+#define MinVertex 5        /*Smallest number of a vertex that is real (not 0 or a map corner).*/
+#define MaxEdge 600        /*Maximum number of edges.*/
+#define MinEdge 20         /*Smallest number of an edge that is real (not to 0 or a map corner).*/
+#define InfiniteCost 10000 /*Cost of an edge that does not exist.*/
+
+/***************************************************************************************/
+/*Speeds (based on 3.1 mph average human walking speed according to Wikipedia).        */
+/***************************************************************************************/
+#define WalkSpeed 272    /*ft/min = (3.1 miles/hr) * (5280 ft/mile) / (60 mins/hr)*/
+#define WalkFactorU 0.9  /*Multiply walk speed by this for walk up.*/
+#define WalkFactorD 1.1  /*Multiply walk speed by this for walk down.*/
+#define SkateFactorU 1.1 /*Multiply walk speed by this for skateboard up.*/
+#define SkateFactorF 2.0 /*Multiply walk speed by this for skateboard flat.*/
+#define SkateFactorD 5.0 /*Multiply walk speed by this for skateboard down.*/
+#define StepFactorU 0.5  /*Multiply walk speed by this for walk up steps.*/
+#define StepFactorD 0.9  /*Multiply walk speed by this for walk down steps.*/
+#define BridgeFactor 1.0 /*Multiply walk speed by this for walking on a bridge.*/
+
+/***************************************************************************************/
+/*TIME (IN SECONDS) TO TRAVERSE AN EDGE i                                              */
+/*Elength denotes an array that stores the lengths of the edges.                       */
+/*This is a reference for how exactly how speed should be computed (and how roundoff   */
+/*should be done when computing the seconds to traverse and edge).                     */
+/*Seconds stored as integers so that results are repeatable between implementations.   */
+/***************************************************************************************/
+int Time(int i) {
+int t = (int)( (60 * ( (double)Elength[i] / (double)WalkSpeed) ) + 0.5 );
+switch (Ecode[i]) {
+   case 'f':                                                break;
+   case 'F': t /= (BoardFlag) ? SkateFactorF : 1;           break;
+   case 'u': t /= WalkFactorU;                              break;
+   case 'U': t /= (BoardFlag) ? SkateFactorU : WalkFactorU; break;
+   case 'd': t /= WalkFactorD;                              break;
+   case 'D': t /= (BoardFlag) ? SkateFactorD : WalkFactorD; break;
+   case 's': t /= StepFactorU;                              break;
+   case 't': t /= StepFactorD;                              break;
+   case 'b': t /= BridgeFactor;                             break;
+   }
+return(t);
+}
